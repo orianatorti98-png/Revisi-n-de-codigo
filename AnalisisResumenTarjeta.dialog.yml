@@ -1,0 +1,90 @@
+kind: AdaptiveDialog
+id: AnalisisResumenTarjeta
+
+beginDialog:
+  kind: OnConversationStart
+  id: onStart
+  actions:
+    # 1️⃣ Pedir resumen (texto libre)
+    - kind: Question
+      id: qResumen
+      prompt: Pegá acá el resumen completo de la tarjeta.
+      property: resumenTexto
+      inputType: string
+
+    # 2️⃣ Confirmación
+    - kind: SendActivity
+      id: msgConfirmacion
+      activity: Listo. Ya analicé el resumen. ¿Qué querés consultar?
+
+    # 3️⃣ Menú con botones
+    - kind: Question
+      id: qMenu
+      prompt: Elegí una opción
+      property: opcionElegida
+      inputType:
+        kind: choice
+        choices:
+          - Ver totales
+          - Calcular punitorios
+          - Ver pago mínimo
+          - Ver cuotas
+          - Ver dólares
+          - Explicar cargos
+
+    # 4️⃣ Resolver opción elegida
+    - kind: ConditionGroup
+      id: resolverMenu
+      actions:
+        - kind: ConditionItem
+          id: condTotales
+          condition: opcionElegida == "Ver totales"
+          actions:
+            - kind: SendActivity
+              id: respTotales
+              activity: ¿Cuál es el total a pagar en pesos y en dólares?
+
+        - kind: ConditionItem
+          id: condPunitorios
+          condition: opcionElegida == "Calcular punitorios"
+          actions:
+            - kind: SendActivity
+              id: respPunitorios
+              activity: ¿Cuánto se cobró por punitorios? Detallá los renglones y el total.
+
+        - kind: ConditionItem
+          id: condMinimo
+          condition: opcionElegida == "Ver pago mínimo"
+          actions:
+            - kind: SendActivity
+              id: respMinimo
+              activity: ¿Cuál es el pago mínimo del resumen?
+
+        - kind: ConditionItem
+          id: condCuotas
+          condition: opcionElegida == "Ver cuotas"
+          actions:
+            - kind: SendActivity
+              id: respCuotas
+              activity: ¿Tiene cuotas pendientes? Indicá pagadas, totales y pendientes.
+
+        - kind: ConditionItem
+          id: condDolares
+          condition: opcionElegida == "Ver dólares"
+          actions:
+            - kind: SendActivity
+              id: respDolares
+              activity: ¿Existe deuda en dólares? Confirmá el total USD.
+
+        - kind: ConditionItem
+          id: condCargos
+          condition: opcionElegida == "Explicar cargos"
+          actions:
+            - kind: SendActivity
+              id: respCargos
+              activity: Explicá los cargos del resumen de forma simple para el cliente.
+
+    # 5️⃣ Volver al menú (loop)
+    - kind: GotoAction
+      id: repetirMenu
+      actionId: qMenu
